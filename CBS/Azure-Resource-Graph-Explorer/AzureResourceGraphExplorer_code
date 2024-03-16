@@ -1,1 +1,21 @@
+resources | where type =~ 'microsoft.compute/disks'
 
+| join kind = leftouter (resourcecontainers | where type =~ 'microsoft.resources/subscriptions'
+
+| project subscriptionName = name, subscriptionId) on subscriptionId
+
+| extend azureRegion = location
+
+| extend resourceId = tolower(tostring(id))
+
+| extend resourceName = name
+
+| extend diskType = sku.name
+
+| extend osDisk = properties.osType
+
+| extend diskSize = tostring(properties.diskSizeGB)
+
+| extend createdDateTime = properties.timeCreated
+
+| project azureRegion, subscriptionName, resourceGroup, resourceId, resourceName, diskType, osDisk, diskSize, managedBy, createdDateTime
